@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+
+# 虚拟环境
+.venv/
+venv/
+env/
+
+# 编辑器/IDE
+.vscode/
+.idea/
+
+# 代码运行器临时文件
+tempCodeRunnerFile.*
+
+# 回收站
+.回收站/
+回收站/
+
+# 操作系统
+.DS_Store
+Thumbs.db

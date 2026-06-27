@@ -1,0 +1,6 @@
+# English: Core dependencies for the California Housing regression experiment.
+# 中文：California Housing 回归实验所需的核心依赖。
+numpy
+pandas
+matplotlib
+scikit-learn
