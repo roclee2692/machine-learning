@@ -1,254 +1,170 @@
-# 机器学习核心算法学习指南
+# Machine Learning 机器学习核心算法学习仓库
 
-## 📚 学习路线
+> A hands-on, tutorial-style repository covering core machine learning algorithms — from linear regression to Transformers — with theory notes, runnable code, exercises, solutions, result figures, and datasets.
+>
+> 一个实战式、教程风格的机器学习学习仓库，覆盖从线性回归到 Transformer 的核心算法，每章包含理论讲解、可运行代码、练习题、答案详解、结果图表与数据集。
 
-本目录包含机器学习核心算法的详细教程，适合跟随吴恩达课程学习的同学。
-
-### 前置知识要求
-- ✅ Python基础
-- ✅ NumPy数组操作
-- ✅ 最优化基础（梯度下降）
-- ✅ 线性代数基础
+**Language / 语言**: [English](#english) | [中文](#中文)
 
 ---
 
-## 🎯 学习内容（2-3周完成）
+## English
 
-### 第1周：回归算法
+### 📖 Overview
 
-#### 01-线性回归 ⭐⭐⭐⭐⭐
-**学习时间：3-4天**
+This repository documents a complete learning path through the core algorithms of machine learning and deep learning. Each chapter is **self-contained**: a folder holds its theory notes (`.md`), code implementation (`.py`), exercises, answer keys, and the result figures that the code produces — so you can read, run, and verify in one place.
 
-- 📖 理论讲解：假设函数、损失函数、梯度下降、正规方程
-- 💻 代码实现：从零实现 + sklearn实现
-- 📝 练习题：8道练习题 + 1道挑战题
-- ✅ 答案详解：完整代码和分析
+It is suitable for learners following Andrew Ng's ML course (or similar) who want concrete, executable examples.
 
-**核心知识点：**
-- 线性回归原理
-- 梯度下降算法
-- 特征缩放
-- 多项式回归
-- 正则化（Ridge/Lasso）
-- 过拟合/欠拟合
+### 📂 Repository Structure
 
-#### 02-逻辑回归 ⭐⭐⭐⭐⭐
-**学习时间：3-4天**
+| Chapter | Topic | Highlights |
+|---|---|---|
+| `00-基础知识` | Fundamentals | Feature engineering guide & practice |
+| `01-线性回归` | Linear Regression | From-scratch + sklearn, gradient-descent viz, California-housing mini-project |
+| `02-逻辑回归` | Logistic Regression | Binary/multiclass, discriminative vs. generative, Iris case studies |
+| `03-决策树与随机森林` | Decision Trees & Random Forest | Information gain, Gini, ensembles |
+| `04-KNN与SVM` | KNN & SVM | Distance metrics, kernel trick |
+| `05-聚类算法` | Clustering | K-Means, hierarchical, DBSCAN |
+| `06-神经网络与深度学习基础` | Neural Networks & DL Basics | NumPy MLP + PyTorch counterpart |
+| `07-CNN与RNN` | CNN & RNN | CNN vs RNN vs LSTM on FashionMNIST |
+| `08-复杂非线性回归` | Complex Nonlinear Regression | LSTM time-series (ETTh1) + ensemble methods |
+| `09-Transform` | Transformer | Transformer fundamentals & implementation |
+| `数据集` | Datasets | `iris.csv`, `ETTh1.csv`, FashionMNIST, AG News |
 
-- 📖 理论讲解：Sigmoid函数、二分类、多分类、决策边界
-- 💻 代码实现：从零实现 + sklearn实现
-- 📝 练习题：7道练习题 + 实战项目
-- ✅ 答案详解：完整代码和分析
-
-**核心知识点：**
-- 逻辑回归原理
-- 交叉熵损失
-- 分类评估指标（准确率、精确率、召回率、F1、AUC）
-- 混淆矩阵
-- One-vs-Rest多分类
-
----
-
-### 第2周：树模型与近邻算法
-
-#### 03-决策树与随机森林 ⭐⭐⭐⭐
-**学习时间：3-4天**
-
-- 📖 理论讲解：信息增益、基尼指数、剪枝、集成学习
-- 💻 代码实现：sklearn实现 + 可视化
-- 📝 练习题：6道练习题
-- ✅ 答案详解：完整代码和分析
-
-**核心知识点：**
-- 决策树原理（ID3/C4.5/CART）
-- 信息熵与信息增益
-- 基尼不纯度
-- 随机森林（Bagging）
-- 特征重要性
-- 树的可视化
-
-#### 04-K近邻与SVM ⭐⭐⭐⭐
-**学习时间：3-4天**
-
-- 📖 理论讲解：距离度量、核函数、支持向量、最大间隔
-- 💻 代码实现：sklearn实现 + 决策边界可视化
-- 📝 练习题：6道练习题
-- ✅ 答案详解：完整代码和分析
-
-**核心知识点：**
-- KNN原理与K值选择
-- 距离度量（欧氏、曼哈顿、闵可夫斯基）
-- SVM原理（线性/非线性）
-- 核技巧（Linear, RBF, Poly）
-- 软间隔与硬间隔
-
----
-
-### 第3周：无监督学习
-
-#### 05-聚类算法 ⭐⭐⭐⭐
-**学习时间：3-4天**
-
-- 📖 理论讲解：K-Means、层次聚类、DBSCAN
-- 💻 代码实现：从零实现K-Means + sklearn实现
-- 📝 练习题：5道练习题 + 实战项目
-- ✅ 答案详解：完整代码和分析
-
-**核心知识点：**
-- K-Means原理与收敛
-- 肘部法则
-- 轮廓系数
-- 层次聚类（凝聚/分裂）
-- DBSCAN密度聚类
-- 聚类评估
-
----
-
-## 📖 每个主题的学习结构
-
-每个算法目录包含4个文件：
+Most chapters follow this layout:
 
 ```
-01-算法名称/
-├── 01-理论讲解.md          # 详细的理论知识
-├── 02-代码实现.py          # 完整的代码示例
-├── 03-练习题.md            # 配套练习题
-└── 04-答案详解.py          # 练习题答案
+NN-章节名称/
+├── 01-理论讲解.md      # Theory notes
+├── 02-代码实现.py      # Code implementation
+├── 03-练习题.md        # Exercises
+└── 04-答案详解.py      # Solutions
 ```
 
----
+### 🗃️ Datasets
 
-## 🎓 学习建议
+| File | Used by | Notes |
+|---|---|---|
+| `数据集/iris.csv` | Linear/Logistic Regression | Classic Iris dataset |
+| `数据集/FashionMNIST/` | CNN/RNN (Ch. 07) | Auto-downloadable via torchvision; included for convenience |
+| `数据集/ag_news/` | Transformer / NLP | Text classification dataset |
+| `08-复杂非线性回归/LSTM/data/ETTh1.csv` | LSTM (Ch. 08) | Electricity Transformer oil-temperature time series |
 
-### 学习顺序
-1. **第1天**：阅读理论讲解（1-2小时）
-2. **第2天**：运行代码实现，理解每一行（2-3小时）
-3. **第3天**：独立完成练习题（2-4小时）
-4. **第4天**：对照答案，查漏补缺（1-2小时）
+### 🚀 Getting Started
 
-### 学习方法
-- ✅ **理论先行**：先理解数学原理
-- ✅ **代码跟进**：边看代码边运行
-- ✅ **动手实践**：独立完成练习
-- ✅ **对比答案**：找出差距
-- ✅ **项目应用**：在Kaggle实战
-
-### 常见误区
-- ❌ 只看不做
-- ❌ 只做不想
-- ❌ 死记公式
-- ❌ 跳过数学
-
-### 进阶路径
-完成这5个核心算法后，你可以：
-- 深入学习神经网络（吴恩达深度学习课程）
-- 参加Kaggle竞赛
-- 学习更多集成方法（XGBoost, LightGBM, CatBoost）
-- 学习降维算法（PCA, t-SNE）
-- 学习时间序列分析
-
----
-
-## 🔧 环境配置
-
-### 必需库
 ```bash
+# Clone
+git clone https://github.com/roclee2692/machine-learning.git
+cd machine-learning
+
+# Core dependencies
 pip install numpy pandas matplotlib seaborn scikit-learn
+
+# Optional (deep learning chapters)
+pip install torch torchvision
 ```
 
-### 可选库（用于深入学习）
+Then open any chapter, read the `.md` theory file, and run the `.py` code, e.g.:
+
 ```bash
-pip install xgboost lightgbm jupyter notebook
+python 01-线性回归/02-代码实现.py
 ```
 
-### 验证安装
-```python
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-from sklearn.linear_model import LinearRegression
+### 🎓 Suggested Learning Flow
 
-print("环境配置成功！")
+1. Read the theory notes (`01-理论讲解.md`).
+2. Run and study the code (`02-代码实现.py`).
+3. Try the exercises (`03-练习题.md`) on your own.
+4. Compare against the solutions (`04-答案详解.py`).
+
+### 📜 License
+
+See [LICENSE](LICENSE) if present. This repository is for educational use.
+
+---
+
+## 中文
+
+### 📖 简介
+
+本仓库记录了一条完整的机器学习与深度学习核心算法学习路线。每一章都是**自包含**的：一个文件夹里同时放着理论讲解（`.md`）、代码实现（`.py`）、练习题、答案详解，以及代码产出的结果图表——可以在一处完成阅读、运行与验证。
+
+适合跟随吴恩达机器学习课程（或同类课程）学习、希望获得可直接运行示例的同学。
+
+### 📂 仓库结构
+
+| 章节 | 主题 | 重点内容 |
+|---|---|---|
+| `00-基础知识` | 基础知识 | 特征工程完整指南与实战 |
+| `01-线性回归` | 线性回归 | 从零实现 + sklearn、梯度下降可视化、加州房价小项目 |
+| `02-逻辑回归` | 逻辑回归 | 二分类/多分类、判别式 vs 生成式、鸢尾花案例 |
+| `03-决策树与随机森林` | 决策树与随机森林 | 信息增益、基尼指数、集成学习 |
+| `04-KNN与SVM` | KNN 与 SVM | 距离度量、核技巧 |
+| `05-聚类算法` | 聚类算法 | K-Means、层次聚类、DBSCAN |
+| `06-神经网络与深度学习基础` | 神经网络基础 | NumPy 手写 MLP + PyTorch 对照实现 |
+| `07-CNN与RNN` | CNN 与 RNN | 在 FashionMNIST 上对比 CNN/RNN/LSTM |
+| `08-复杂非线性回归` | 复杂非线性回归 | LSTM 时间序列（ETTh1）+ 集成算法 |
+| `09-Transform` | Transformer | Transformer 原理与实现 |
+| `数据集` | 数据集 | `iris.csv`、`ETTh1.csv`、FashionMNIST、AG News |
+
+多数章节采用如下结构：
+
+```
+NN-章节名称/
+├── 01-理论讲解.md      # 详细理论知识
+├── 02-代码实现.py      # 完整代码示例
+├── 03-练习题.md        # 配套练习题
+└── 04-答案详解.py      # 练习题答案
 ```
 
----
+### 🗃️ 数据集说明
 
-## 📊 学习进度追踪
+| 文件 | 使用章节 | 说明 |
+|---|---|---|
+| `数据集/iris.csv` | 线性/逻辑回归 | 经典鸢尾花数据集 |
+| `数据集/FashionMNIST/` | CNN/RNN（第 07 章） | 可由 torchvision 自动下载，为方便已一并收录 |
+| `数据集/ag_news/` | Transformer / NLP | 文本分类数据集 |
+| `08-复杂非线性回归/LSTM/data/ETTh1.csv` | LSTM（第 08 章） | 电力变压器油温时间序列数据 |
 
-用这个checklist追踪你的学习进度：
+### 🚀 快速开始
 
-- [ ] 01-线性回归
-  - [ ] 理论讲解
-  - [ ] 代码实现
-  - [ ] 练习题
-  - [ ] 答案对照
-- [ ] 02-逻辑回归
-  - [ ] 理论讲解
-  - [ ] 代码实现
-  - [ ] 练习题
-  - [ ] 答案对照
-- [ ] 03-决策树与随机森林
-  - [ ] 理论讲解
-  - [ ] 代码实现
-  - [ ] 练习题
-  - [ ] 答案对照
-- [ ] 04-K近邻与SVM
-  - [ ] 理论讲解
-  - [ ] 代码实现
-  - [ ] 练习题
-  - [ ] 答案对照
-- [ ] 05-聚类算法
-  - [ ] 理论讲解
-  - [ ] 代码实现
-  - [ ] 练习题
-  - [ ] 答案对照
+```bash
+# 克隆仓库
+git clone https://github.com/roclee2692/machine-learning.git
+cd machine-learning
 
----
+# 核心依赖
+pip install numpy pandas matplotlib seaborn scikit-learn
 
-## 💡 学习资源
+# 可选（深度学习章节）
+pip install torch torchvision
+```
 
-### 推荐课程
-- **吴恩达机器学习课程**（你正在学习的）
-- Coursera: Machine Learning by Andrew Ng
-- 斯坦福CS229
+然后进入任意章节，先看 `.md` 理论文件，再运行 `.py` 代码，例如：
 
-### 推荐书籍
-- 《机器学习》周志华（西瓜书）
-- 《统计学习方法》李航
-- 《Hands-On Machine Learning》（动手学机器学习）
+```bash
+python 01-线性回归/02-代码实现.py
+```
 
-### 实战平台
-- Kaggle：https://www.kaggle.com
-- 天池：https://tianchi.aliyun.com
+### 🎓 建议学习流程
 
-### 可视化工具
-- TensorBoard
-- Weights & Biases
-- MLflow
+1. 阅读理论讲解（`01-理论讲解.md`）。
+2. 运行并研读代码（`02-代码实现.py`）。
+3. 独立完成练习题（`03-练习题.md`）。
+4. 对照答案查漏补缺（`04-答案详解.py`）。
+
+### 💡 学习建议
+
+- **理论先行**：先理解数学原理，再看代码。
+- **动手实践**：边看边运行，独立完成练习远比只看更重要。
+- **对比答案**：找出自己与参考实现的差距。
+
+### 📜 许可
+
+如有 [LICENSE](LICENSE) 文件请以其为准。本仓库仅用于学习用途。
 
 ---
 
-## 🤝 如何提问
-
-遇到问题时，记录以下信息：
-1. 在哪个文件的哪一行遇到问题
-2. 报错信息是什么
-3. 你尝试了什么方法
-4. 你的理解是什么
-
----
-
-## ✨ 下一步
-
-完成本目录所有内容后，建议：
-1. 复习你的Titanic项目，用新学的知识优化
-2. 开始一个新的Kaggle竞赛
-3. 学习神经网络和深度学习
-4. 探索你感兴趣的应用领域（NLP、CV、推荐系统等）
-
----
-
-**记住：机器学习是实践的学问，动手做远比看教程重要！**
-
-祝学习愉快！🚀
+**记住：机器学习是实践的学问，动手做远比看教程重要！🚀**
+**Remember: machine learning is learned by doing — running code beats reading about it. 🚀**
