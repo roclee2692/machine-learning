@@ -36,7 +36,7 @@ from torch.nn.utils.rnn import pad_sequence
 from collections import Counter
 
 # 中文字体
-plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei']
+plt.rcParams['font.sans-serif'] = ['Microsoft YaHei', 'SimHei', 'PingFang SC', 'Hiragino Sans GB', 'Heiti SC', 'Arial Unicode MS', 'Noto Sans CJK SC', 'WenQuanYi Micro Hei', 'DejaVu Sans']
 plt.rcParams['axes.unicode_minus'] = False
 
 # 设备

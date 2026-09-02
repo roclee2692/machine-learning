@@ -71,6 +71,14 @@ Then open any chapter, read the `.md` theory file, and run the `.py` code, e.g.:
 python 01-线性回归/02-代码实现.py
 ```
 
+### Cross-platform Chinese fonts
+
+Plotting scripts use an ordered font fallback list for Windows, macOS, and
+Linux. Windows prefers Microsoft YaHei or SimHei; macOS uses PingFang SC,
+Hiragino Sans GB, Heiti SC, or Arial Unicode MS; Linux uses Noto Sans CJK SC
+or WenQuanYi Micro Hei when installed. Proprietary font files are not bundled
+in this repository.
+
 ### 🎓 Suggested Learning Flow
 
 1. Read the theory notes (`01-理论讲解.md`).
@@ -146,6 +154,12 @@ pip install torch torchvision
 ```bash
 python 01-线性回归/02-代码实现.py
 ```
+
+### 跨平台中文字体
+
+绘图脚本按 Windows、macOS、Linux 的顺序配置中文字体回退。Windows 优先使用
+微软雅黑或黑体；macOS 使用苹方、冬青黑体、华文黑体或 Arial Unicode MS；Linux
+在已安装时使用 Noto Sans CJK SC 或文泉驿微米黑。本仓库不捆绑专有字体文件。
 
 ### 🎓 建议学习流程
 

@@ -21,7 +21,7 @@ from sklearn.datasets import load_iris, load_breast_cancer, fetch_california_hou
 import pandas as pd
 
 # 设置中文显示
-plt.rcParams['font.sans-serif'] = ['SimHei']
+plt.rcParams['font.sans-serif'] = ['Microsoft YaHei', 'SimHei', 'PingFang SC', 'Hiragino Sans GB', 'Heiti SC', 'Arial Unicode MS', 'Noto Sans CJK SC', 'WenQuanYi Micro Hei', 'DejaVu Sans']
 plt.rcParams['axes.unicode_minus'] = False
 
 
@@ -443,4 +443,3 @@ if __name__ == "__main__":
     print("\n" + "="*50)
     print("所有示例运行完成！")
     print("="*50)
-

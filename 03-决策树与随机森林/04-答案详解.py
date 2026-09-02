@@ -13,7 +13,7 @@ from sklearn.preprocessing import StandardScaler
 import pandas as pd
 
 # 设置中文显示
-plt.rcParams['font.sans-serif'] = ['SimHei']
+plt.rcParams['font.sans-serif'] = ['Microsoft YaHei', 'SimHei', 'PingFang SC', 'Hiragino Sans GB', 'Heiti SC', 'Arial Unicode MS', 'Noto Sans CJK SC', 'WenQuanYi Micro Hei', 'DejaVu Sans']
 plt.rcParams['axes.unicode_minus'] = False
 
 
@@ -289,4 +289,3 @@ if __name__ == "__main__":
     print("\n" + "="*60)
     print("所有答案已完成！")
     print("="*60)
-

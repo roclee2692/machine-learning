@@ -22,7 +22,7 @@ from matplotlib.animation import FuncAnimation
 from sklearn.datasets import make_moons
 
 np.random.seed(42)
-plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei']
+plt.rcParams['font.sans-serif'] = ['Microsoft YaHei', 'SimHei', 'PingFang SC', 'Hiragino Sans GB', 'Heiti SC', 'Arial Unicode MS', 'Noto Sans CJK SC', 'WenQuanYi Micro Hei', 'DejaVu Sans']
 plt.rcParams['axes.unicode_minus'] = False
 
 

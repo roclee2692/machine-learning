@@ -16,7 +16,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 # 设置中文显示
-plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']
+plt.rcParams['font.sans-serif'] = ['Microsoft YaHei', 'SimHei', 'PingFang SC', 'Hiragino Sans GB', 'Heiti SC', 'Arial Unicode MS', 'Noto Sans CJK SC', 'WenQuanYi Micro Hei', 'DejaVu Sans']
 plt.rcParams['axes.unicode_minus'] = False
 
 # ============================= 第1步：导入库 =============================

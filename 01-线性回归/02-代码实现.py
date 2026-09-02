@@ -1,3 +1,4 @@
+
 """
 线性回归 - 完整实现
 包含从零实现和scikit-learn实现两种方式
@@ -20,7 +21,7 @@ from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 import pandas as pd
 
 # 设置中文显示
-plt.rcParams['font.sans-serif'] = ['SimHei']
+plt.rcParams['font.sans-serif'] = ['Microsoft YaHei', 'SimHei', 'PingFang SC', 'Hiragino Sans GB', 'Heiti SC', 'Arial Unicode MS', 'Noto Sans CJK SC', 'WenQuanYi Micro Hei', 'DejaVu Sans']
 plt.rcParams['axes.unicode_minus'] = False
 
 

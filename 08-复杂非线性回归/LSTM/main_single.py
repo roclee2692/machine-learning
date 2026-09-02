@@ -54,31 +54,19 @@ VAL_RATIO = 0.15
 TEST_RATIO = 0.20
 TARGET_COL = "OT"
 
-import matplotlib.font_manager as _fm
-
-# 注册中文字体：优先 Microsoft YaHei，备选 SimHei
-_CN_FONT_PATH = None
-for _name in ["msyh.ttc", "simhei.ttf"]:
-    _candidate = os.path.join("C:\\Windows\\Fonts", _name)
-    if os.path.exists(_candidate):
-        _CN_FONT_PATH = _candidate
-        break
-if _CN_FONT_PATH:
-    _fm.fontManager.addfont(_CN_FONT_PATH)
-    _cn_family = _fm.FontProperties(fname=_CN_FONT_PATH).get_name()
-    plt.rcParams["font.sans-serif"] = [_cn_family] + plt.rcParams["font.sans-serif"]
-    plt.rcParams["axes.unicode_minus"] = False
-    print(f"[OK] 中文字体已注册: {_cn_family} ({_CN_FONT_PATH})")
-else:
-    print("[WARN] 未找到中文字体，图表中文可能显示为方块")
+_CN_FONT_FALLBACKS = [
+    "Microsoft YaHei", "SimHei",
+    "PingFang SC", "Hiragino Sans GB", "Heiti SC", "Arial Unicode MS",
+    "Noto Sans CJK SC", "WenQuanYi Micro Hei", "DejaVu Sans",
+]
+plt.rcParams["font.sans-serif"] = _CN_FONT_FALLBACKS
+plt.rcParams["axes.unicode_minus"] = False
 
 sns.set_style("darkgrid")
 
-# seaborn 会重置 rcParams，重新应用中文字体配置
-if _CN_FONT_PATH:
-    _cn_family2 = _fm.FontProperties(fname=_CN_FONT_PATH).get_name()
-    plt.rcParams["font.sans-serif"] = [_cn_family2] + plt.rcParams["font.sans-serif"]
-    plt.rcParams["axes.unicode_minus"] = False
+# seaborn 会重置 rcParams，重新应用跨平台中文字体配置
+plt.rcParams["font.sans-serif"] = _CN_FONT_FALLBACKS
+plt.rcParams["axes.unicode_minus"] = False
 
 
 # ============================== 工具函数 ==============================

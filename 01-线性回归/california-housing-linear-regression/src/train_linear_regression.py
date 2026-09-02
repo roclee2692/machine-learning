@@ -56,7 +56,11 @@ FIGURE_DIR.mkdir(parents=True, exist_ok=True)
 plt.rcParams["font.sans-serif"] = [
     "Microsoft YaHei",
     "SimHei",
+    "PingFang SC",
+    "Hiragino Sans GB",
+    "Heiti SC",
     "Noto Sans CJK SC",
+    "WenQuanYi Micro Hei",
     "Arial Unicode MS",
     "DejaVu Sans",
 ]
