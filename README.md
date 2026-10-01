@@ -29,7 +29,7 @@ It is suitable for learners following Andrew Ng's ML course (or similar) who wan
 | `06-神经网络与深度学习基础` | Neural Networks & DL Basics | NumPy MLP + PyTorch counterpart |
 | `07-CNN与RNN` | CNN & RNN | CNN vs RNN vs LSTM on FashionMNIST |
 | `08-复杂非线性回归` | Complex Nonlinear Regression | LSTM time-series (ETTh1) + ensemble methods |
-| `09-Transform` | Transformer | Transformer fundamentals & implementation |
+| `09-Transform` | Transformer | Transformer fundamentals & implementation; 🎬 [animated explainer video](09-Transform/video/) (JS-rendered, Chinese narration) + interactive attention playground |
 | `数据集` | Datasets | `iris.csv`, `ETTh1.csv`, FashionMNIST, AG News |
 
 Most chapters follow this layout:
@@ -113,7 +113,7 @@ See [LICENSE](LICENSE) if present. This repository is for educational use.
 | `06-神经网络与深度学习基础` | 神经网络基础 | NumPy 手写 MLP + PyTorch 对照实现 |
 | `07-CNN与RNN` | CNN 与 RNN | 在 FashionMNIST 上对比 CNN/RNN/LSTM |
 | `08-复杂非线性回归` | 复杂非线性回归 | LSTM 时间序列（ETTh1）+ 集成算法 |
-| `09-Transform` | Transformer | Transformer 原理与实现 |
+| `09-Transform` | Transformer | Transformer 原理与实现；🎬 [讲解视频《什么是 Transformer？》](09-Transform/video/)（JS 动画 + 中文配音）与可交互的注意力实验室 |
 | `数据集` | 数据集 | `iris.csv`、`ETTh1.csv`、FashionMNIST、AG News |
 
 多数章节采用如下结构：

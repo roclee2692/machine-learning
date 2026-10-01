@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>注意力实验室</title>
+<style>
+  :root { --bg: #070b17; --panel: #0e1530; --line: rgba(255,255,255,0.1); --text: #eef1fb; --dim: #8d96b8;
+    --Q: #ffc857; --K: #4fd1c5; --V: #f472b6; --green: #34d399; --red: #f87171; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+    font-family: "LXGW WenKai", "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 24px 16px 60px; }
+  a { color: var(--K); }
+  h1 { margin: 0 0 6px; font-size: 28px; }
+  .lead { color: var(--dim); margin: 0 0 22px; line-height: 1.7; }
+  section { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 20px; margin-bottom: 24px; }
+  section h2 { margin: 0 0 6px; font-size: 21px; }
+  section > p { margin: 0 0 16px; color: var(--dim); line-height: 1.7; }
+  .grid2 { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+  canvas { width: 100%; display: block; border-radius: 12px; background: #0a0f1f; touch-action: none; }
+  .ctrl { display: flex; align-items: center; gap: 12px; margin: 10px 0; flex-wrap: wrap; }
+  .ctrl label { min-width: 120px; color: var(--dim); }
+  .ctrl input[type=range] { flex: 1; min-width: 160px; accent-color: var(--Q); }
+  .ctrl output { min-width: 64px; font-variant-numeric: tabular-nums; color: var(--Q); }
+  table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: 15px; }
+  th, td { padding: 7px 6px; text-align: right; border-bottom: 1px solid var(--line); }
+  th:first-child, td:first-child { text-align: left; }
+  th { color: var(--dim); font-weight: 500; }
+  td .bar { display: inline-block; height: 10px; border-radius: 5px; background: var(--Q); vertical-align: middle; margin-right: 6px; }
+  .swatch { display: inline-block; width: 14px; height: 14px; border-radius: 50%; vertical-align: -2px; margin-right: 6px; }
+  .out { display: flex; align-items: center; gap: 14px; margin-top: 14px; padding: 12px 14px; border-radius: 12px; background: rgba(255,255,255,0.04); }
+  .out .big { width: 52px; height: 52px; border-radius: 12px; border: 2px solid rgba(255,255,255,0.3); }
+  .formula { font-family: "KaTeX_Main", "Times New Roman", serif; font-size: 18px; color: var(--text); background: rgba(255,255,255,0.04);
+    padding: 10px 14px; border-radius: 10px; margin: 10px 0 0; line-height: 1.8; overflow-x: auto; }
+  .tip { color: var(--dim); font-size: 14px; margin-top: 10px; line-height: 1.7; }
+  .tip b { color: var(--text); font-weight: 600; }
+  .btns { display: flex; gap: 8px; flex-wrap: wrap; }
+  button { background: transparent; color: var(--text); border: 1px solid var(--line); border-radius: 8px; padding: 6px 12px; font: inherit; cursor: pointer; }
+  button:hover { border-color: var(--Q); }
+  @media (max-width: 860px) { .grid2 { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>注意力实验室</h1>
+  <p class="lead">视频看完了？在这里亲手“拧一拧”注意力的每个零件。所有数字都由浏览器实时计算。
+    <a href="index.html">← 回到视频</a></p>
+
+  <section>
+    <h2>① 拖动 Query，看注意力怎么分配</h2>
+    <p>黄色箭头是「它」的 Query，青色箭头是每个词的 Key。拖动箭头的尖端（Key 也能拖），右边的表格会实时算出点积、softmax 和最终混合出来的颜色（Value）。</p>
+    <div class="grid2">
+      <div>
+        <canvas id="plane" height="520"></canvas>
+        <div class="btns" style="margin-top:10px">
+          <button data-preset="tired">它太累了 → 小猫</button>
+          <button data-preset="high">它太高了 → 桌子</button>
+          <button data-preset="ortho">Query 与所有 Key 垂直</button>
+        </div>
+      </div>
+      <div>
+        <div class="ctrl"><label for="scale">缩放：除以 √dₖ</label><input id="scale" type="range" min="0" max="100" value="50"><output id="scaleOut"></output></div>
+        <table>
+          <thead><tr><th>词</th><th>q · k</th><th>÷ √dₖ</th><th>e^x</th><th>注意力</th></tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+        <div class="out"><div class="big" id="mixed"></div><div>
+          <div>输出 = Σ 注意力ᵢ × Valueᵢ</div>
+          <div class="tip" id="mixedTip" style="margin:4px 0 0"></div></div></div>
+        <p class="tip">试试看：把 <b>√dₖ 调小</b>（相当于不缩放、分数很大），注意力会变得“一边倒”；
+          把它 <b>调大</b>，注意力会变得平均——这正是论文要除以 √dₖ 的原因：让分数处在 softmax 最“敏感”的范围。</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>② 遮罩：解码器为什么不能偷看</h2>
+    <p>点表格里的格子，切换「能看 / 遮住（−∞）」。遮住的位置在 softmax 之后权重会变成 0，因为 e<sup>−∞</sup> = 0。</p>
+    <div class="grid2">
+      <canvas id="mask" height="420"></canvas>
+      <div>
+        <div class="btns"><button id="causal">恢复成“因果遮罩”（下三角）</button><button id="nomask">全部打开（编码器的样子）</button></div>
+        <p class="tip">每一行是“正在写的那个词”，每一列是“它能参考的词”。
+          这里的原始分数是固定的一组例子，你可以观察：遮住某些格子后，<b>剩下格子的比例会重新归一化</b>，依然加起来等于 1。</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>③ 位置编码的“指纹”</h2>
+    <p>左图是位置编码本身（行 = 位置，列 = 维度）；右图是任意两个位置编码的点积——越亮表示越相似。注意对角线附近最亮：<b>离得近的位置，指纹也像</b>。</p>
+    <div class="ctrl"><label for="dmodel">维度 d_model</label><input id="dmodel" type="range" min="8" max="128" step="8" value="64"><output id="dOut"></output></div>
+    <div class="ctrl"><label for="posSel">选中位置 pos</label><input id="posSel" type="range" min="0" max="49" value="10"><output id="posOut"></output></div>
+    <div class="grid2">
+      <canvas id="pe" height="420"></canvas>
+      <canvas id="sim" height="420"></canvas>
+    </div>
+    <div class="formula">PE(pos, 2i) = sin(pos / 10000<sup>2i/d</sup>)　　PE(pos, 2i+1) = cos(pos / 10000<sup>2i/d</sup>)</div>
+  </section>
+</div>
+
+<script src="src/fonts.js"></script>
+<script>
+(async function () {
+  // ---------- 字体 ----------
+  const data = window.FONT_DATA || {};
+  const b64 = (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0)).buffer;
+  for (const [name, src] of [['LXGW WenKai', data.wenkai], ['KaTeX_Main', data.katexMain]]) {
+    if (!src) continue;
+    try { const f = new FontFace(name, b64(src)); await f.load(); document.fonts.add(f); } catch (e) {}
+  }
+  const FONT = '"LXGW WenKai", "PingFang SC", "Microsoft YaHei", sans-serif';
+  const C = { Q: '#ffc857', K: '#4fd1c5', V: '#f472b6', dim: '#8d96b8', text: '#eef1fb', grid: 'rgba(120,140,200,0.12)', red: '#f87171', green: '#34d399' };
+
+  function setup(cv) {
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    const w = cv.clientWidth;
+    const H = +cv.dataset.h || +cv.getAttribute('height');
+    cv.dataset.h = H;
+    cv.width = Math.round(w * dpr); cv.height = Math.round(H * dpr);
+    cv.style.height = H + 'px';
+    const ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx, w, h: H };
+  }
+  const softmax = (xs) => { const fin = xs.filter((x) => x !== -Infinity); const m = Math.max(...fin); const e = xs.map((x) => (x === -Infinity ? 0 : Math.exp(x - m))); const s = e.reduce((a, b) => a + b, 0); return e.map((x) => x / s); };
+  const hex = (h) => { const n = parseInt(h.slice(1), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; };
+  const fmt = (x, d = 2) => (x === -Infinity ? '−∞' : x.toFixed(d).replace('-', '−'));
+
+  // ============ ① 拖动 Query ============
+  const words = [
+    { w: '小猫', k: [1.6, 1.2], c: '#ff9a3c' },
+    { w: '桌子', k: [1.4, -1.3], c: '#3b82f6' },
+    { w: '跳上', k: [-0.4, 1.6], c: '#4ade80' },
+    { w: '累了', k: [1.0, 0.9], c: '#b46cff' },
+    { w: '因为', k: [-1.5, -0.6], c: '#a3a3c2' },
+  ];
+  const K0 = words.map((d) => d.k.slice());
+  const q = [1.8, 1.2];
+  const plane = document.getElementById('plane');
+  const scale = document.getElementById('scale'), scaleOut = document.getElementById('scaleOut');
+  let drag = null;
+  const U = () => plane.clientWidth / 7.2; // 每单位像素
+  const toPx = (v, w, h) => [w / 2 + v[0] * U(), h / 2 - v[1] * U()];
+  const fromPx = (x, y, w, h) => [(x - w / 2) / U(), (h / 2 - y) / U()];
+  const sqrtDk = () => Math.pow(2, (scale.value / 100) * 6 - 3); // 0.125 ~ 8
+
+  function arrow(ctx, x1, y1, x2, y2, col, lw) {
+    const a = Math.atan2(y2 - y1, x2 - x1), hs = 13;
+    ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = lw; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2 - Math.cos(a) * hs * 0.6, y2 - Math.sin(a) * hs * 0.6); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x2, y2); ctx.lineTo(x2 - hs * Math.cos(a - 0.45), y2 - hs * Math.sin(a - 0.45)); ctx.lineTo(x2 - hs * Math.cos(a + 0.45), y2 - hs * Math.sin(a + 0.45)); ctx.closePath(); ctx.fill();
+  }
+
+  function drawPlane() {
+    const { ctx, w, h } = setup(plane);
+    ctx.clearRect(0, 0, w, h);
+    const u = U();
+    ctx.strokeStyle = C.grid; ctx.lineWidth = 1;
+    for (let i = -6; i <= 6; i++) {
+      ctx.beginPath(); ctx.moveTo(w / 2 + i * u, 0); ctx.lineTo(w / 2 + i * u, h); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0, h / 2 + i * u); ctx.lineTo(w, h / 2 + i * u); ctx.stroke();
+    }
+    ctx.strokeStyle = 'rgba(200,210,255,0.35)';
+    ctx.beginPath(); ctx.moveTo(0, h / 2); ctx.lineTo(w, h / 2); ctx.moveTo(w / 2, 0); ctx.lineTo(w / 2, h); ctx.stroke();
+    const scores = words.map((d) => (q[0] * d.k[0] + q[1] * d.k[1]) / sqrtDk());
+    const att = softmax(scores);
+    words.forEach((d, i) => {
+      const [x, y] = toPx(d.k, w, h);
+      ctx.globalAlpha = 0.35 + 0.65 * Math.min(1, att[i] * 2.2);
+      arrow(ctx, w / 2, h / 2, x, y, C.K, 2 + 8 * att[i]);
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = d.c; ctx.beginPath(); ctx.arc(x, y, 7, 0, Math.PI * 2); ctx.fill();
+      ctx.font = `600 17px ${FONT}`; ctx.fillStyle = C.text; ctx.textAlign = 'center';
+      ctx.fillText(d.w + ' ' + Math.round(att[i] * 100) + '%', x, y - 16);
+    });
+    const [qx, qy] = toPx(q, w, h);
+    arrow(ctx, w / 2, h / 2, qx, qy, C.Q, 5);
+    ctx.fillStyle = C.Q; ctx.beginPath(); ctx.arc(qx, qy, 9, 0, Math.PI * 2); ctx.fill();
+    ctx.font = `700 18px ${FONT}`; ctx.fillText('Query（它）', qx, qy + 30);
+
+    // 表格
+    const exps = scores.map(Math.exp);
+    document.getElementById('tbody').innerHTML = words.map((d, i) => `<tr>
+      <td><span class="swatch" style="background:${d.c}"></span>${d.w}</td>
+      <td>${fmt(scores[i] * sqrtDk())}</td><td>${fmt(scores[i])}</td><td>${exps[i] > 9999 ? exps[i].toExponential(1) : fmt(exps[i])}</td>
+      <td><span class="bar" style="width:${Math.round(att[i] * 90)}px"></span>${(att[i] * 100).toFixed(1)}%</td></tr>`).join('');
+    const mix = [0, 1, 2].map((k) => words.reduce((s, d, i) => s + hex(d.c)[k] * att[i], 0));
+    document.getElementById('mixed').style.background = `rgb(${mix.map(Math.round).join(',')})`;
+    const top = att.indexOf(Math.max(...att));
+    document.getElementById('mixedTip').textContent = `主要成分来自「${words[top].w}」（${(att[top] * 100).toFixed(0)}%）`;
+    scaleOut.textContent = '÷ ' + sqrtDk().toFixed(2);
+  }
+
+  function pick(e) {
+    const r = plane.getBoundingClientRect();
+    const x = e.clientX - r.left, y = e.clientY - r.top, w = r.width, h = r.height;
+    const cands = [{ v: q }].concat(words.map((d) => ({ v: d.k })));
+    let best = null, bd = 28;
+    cands.forEach((c) => { const [px, py] = toPx(c.v, w, h); const d = Math.hypot(px - x, py - y); if (d < bd) { bd = d; best = c; } });
+    return best;
+  }
+  plane.addEventListener('pointerdown', (e) => { drag = pick(e); if (drag) plane.setPointerCapture(e.pointerId); });
+  plane.addEventListener('pointermove', (e) => {
+    const r = plane.getBoundingClientRect();
+    plane.style.cursor = drag || pick(e) ? 'grab' : 'default';
+    if (!drag) return;
+    const v = fromPx(e.clientX - r.left, e.clientY - r.top, r.width, r.height);
+    drag.v[0] = Math.max(-3.4, Math.min(3.4, v[0])); drag.v[1] = Math.max(-3.4, Math.min(3.4, v[1]));
+    drawPlane();
+  });
+  plane.addEventListener('pointerup', () => (drag = null));
+  scale.addEventListener('input', drawPlane);
+  document.querySelectorAll('[data-preset]').forEach((b) => b.addEventListener('click', () => {
+    const p = b.dataset.preset;
+    words.forEach((d, i) => { d.k[0] = K0[i][0]; d.k[1] = K0[i][1]; });
+    if (p === 'tired') { q[0] = 1.8; q[1] = 1.2; }
+    if (p === 'high') { q[0] = 1.7; q[1] = -1.5; }
+    if (p === 'ortho') { q[0] = 0; q[1] = 1.6; words.forEach((d) => (d.k[1] = 0)); }
+    drawPlane();
+  }));
+
+  // ============ ② 遮罩 ============
+  const toks = ['<开始>', 'I', 'like', 'cats'];
+  const raw = [[1.0, 0.2, 0.8, 0.5], [1.2, 2.0, 0.3, 0.9], [0.4, 1.5, 1.8, 0.6], [0.3, 0.6, 2.2, 1.9]];
+  let allowed = raw.map((r, i) => r.map((_, j) => j <= i));
+  const maskCv = document.getElementById('mask');
+  let cellGeo = null;
+  function drawMask() {
+    const { ctx, w, h } = setup(maskCv);
+    ctx.clearRect(0, 0, w, h);
+    const left = 80, top = 50, cs = Math.min((w - left - 20) / 4, (h - top - 20) / 4);
+    cellGeo = { left, top, cs };
+    ctx.font = `600 15px ${FONT}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    toks.forEach((t, i) => { ctx.fillStyle = C.dim; ctx.fillText(t, left + i * cs + cs / 2, top - 20); ctx.fillText(t, left / 2, top + i * cs + cs / 2); });
+    raw.forEach((row, i) => {
+      const sc = row.map((v, j) => (allowed[i][j] ? v : -Infinity));
+      const wts = allowed[i].some(Boolean) ? softmax(sc) : row.map(() => 0);
+      row.forEach((v, j) => {
+        const x = left + j * cs, y = top + i * cs;
+        ctx.fillStyle = allowed[i][j] ? `rgba(52,211,153,${0.12 + 0.75 * wts[j]})` : 'rgba(248,113,113,0.16)';
+        ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x + 3, y + 3, cs - 6, cs - 6, 8) : ctx.rect(x + 3, y + 3, cs - 6, cs - 6); ctx.fill();
+        ctx.fillStyle = allowed[i][j] ? C.text : C.red;
+        ctx.font = `600 ${Math.round(cs * 0.2)}px ${FONT}`;
+        ctx.fillText(allowed[i][j] ? (wts[j] * 100).toFixed(0) + '%' : '−∞', x + cs / 2, y + cs / 2 - (allowed[i][j] ? 8 : 0));
+        if (allowed[i][j]) { ctx.font = `400 ${Math.round(cs * 0.13)}px ${FONT}`; ctx.fillStyle = C.dim; ctx.fillText('分数 ' + v.toFixed(1), x + cs / 2, y + cs / 2 + 16); }
+      });
+    });
+  }
+  maskCv.addEventListener('click', (e) => {
+    const r = maskCv.getBoundingClientRect();
+    const { left, top, cs } = cellGeo;
+    const j = Math.floor((e.clientX - r.left - left) / cs), i = Math.floor((e.clientY - r.top - top) / cs);
+    if (i >= 0 && i < 4 && j >= 0 && j < 4) { allowed[i][j] = !allowed[i][j]; drawMask(); }
+  });
+  document.getElementById('causal').onclick = () => { allowed = raw.map((r, i) => r.map((_, j) => j <= i)); drawMask(); };
+  document.getElementById('nomask').onclick = () => { allowed = raw.map((r) => r.map(() => true)); drawMask(); };
+
+  // ============ ③ 位置编码 ============
+  const dIn = document.getElementById('dmodel'), posIn = document.getElementById('posSel');
+  const PE = (pos, i, d) => (i % 2 === 0 ? Math.sin(pos / Math.pow(10000, i / d)) : Math.cos(pos / Math.pow(10000, (i - 1) / d)));
+  function div(v) { const z = [28, 34, 60], c = v >= 0 ? [255, 170, 80] : [80, 150, 255], a = Math.min(1, Math.abs(v)); return `rgb(${z.map((x, i) => Math.round(x + (c[i] - x) * a)).join(',')})`; }
+  function drawPE() {
+    const d = +dIn.value, P = 50, sel = +posIn.value;
+    document.getElementById('dOut').textContent = d;
+    document.getElementById('posOut').textContent = sel;
+    const vecs = Array.from({ length: P }, (_, p) => Array.from({ length: d }, (_, i) => PE(p, i, d)));
+    { // 编码本身
+      const { ctx, w, h } = setup(document.getElementById('pe'));
+      ctx.clearRect(0, 0, w, h);
+      const cw = (w - 40) / d, ch = (h - 40) / P;
+      for (let p = 0; p < P; p++) for (let i = 0; i < d; i++) { ctx.fillStyle = div(vecs[p][i]); ctx.fillRect(30 + i * cw, 25 + p * ch, Math.max(1, cw - 0.5), Math.max(1, ch - 0.5)); }
+      ctx.strokeStyle = C.Q; ctx.lineWidth = 2; ctx.strokeRect(29, 25 + sel * ch - 1, d * cw + 2, ch + 2);
+      ctx.fillStyle = C.dim; ctx.font = `14px ${FONT}`; ctx.textAlign = 'left'; ctx.fillText('维度 →', 30, 15);
+      ctx.save(); ctx.translate(14, 40); ctx.rotate(Math.PI / 2); ctx.fillText('位置 →', 0, 0); ctx.restore();
+    }
+    { // 相似度
+      const { ctx, w, h } = setup(document.getElementById('sim'));
+      ctx.clearRect(0, 0, w, h);
+      const s = Math.min(w - 40, h - 40) / P, ox = (w - s * P) / 2, oy = 25;
+      for (let a = 0; a < P; a++) for (let b = 0; b < P; b++) {
+        const dot = vecs[a].reduce((t, x, i) => t + x * vecs[b][i], 0) / (d / 2);
+        const v = Math.max(0, Math.min(1, (dot + 0.2) / 1.2));
+        ctx.fillStyle = `rgb(${Math.round(20 + 235 * v)},${Math.round(28 + 172 * v * v)},${Math.round(60 + 30 * v)})`;
+        ctx.fillRect(ox + b * s, oy + a * s, s + 0.5, s + 0.5);
+      }
+      ctx.strokeStyle = C.Q; ctx.lineWidth = 2; ctx.strokeRect(ox - 1, oy + sel * s - 1, P * s + 2, s + 2);
+      ctx.fillStyle = C.dim; ctx.font = `14px ${FONT}`; ctx.textAlign = 'center';
+      ctx.fillText(`第 ${sel} 行：位置 ${sel} 和每个位置的相似度`, w / 2, 15);
+    }
+  }
+  dIn.addEventListener('input', drawPE); posIn.addEventListener('input', drawPE);
+
+  const all = () => { drawPlane(); drawMask(); drawPE(); };
+  window.addEventListener('resize', all);
+  all();
+})();
+</script>
+</body>
+</html>

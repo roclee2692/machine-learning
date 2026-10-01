@@ -23,3 +23,8 @@ tempCodeRunnerFile.*
 # 操作系统
 .DS_Store
 Thumbs.db
+
+# 视频工程的临时文件
+09-Transform/video/tools/.tts-cache/
+09-Transform/video/tools/.snaps/
+09-Transform/video/tools/.render/

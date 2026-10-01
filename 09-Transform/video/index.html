@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>什么是 Transformer？</title>
+<style>
+  :root {
+    --bg: #070b17; --panel: #0e1530; --line: rgba(255,255,255,0.1);
+    --text: #eef1fb; --dim: #8d96b8; --accent: #ffc857; --k: #4fd1c5;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--text);
+    font-family: "LXGW WenKai", "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; }
+  .wrap { max-width: 1280px; margin: 0 auto; padding: 24px 16px 48px; }
+  header h1 { font-size: 28px; margin: 0 0 4px; font-weight: 700; }
+  header p { margin: 0 0 18px; color: var(--dim); font-size: 15px; }
+  header a { color: var(--k); }
+  #player { position: relative; background: #000; border-radius: 14px; overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5); border: 1px solid var(--line); }
+  #player:fullscreen { border-radius: 0; display: flex; flex-direction: column; justify-content: center; }
+  #stage { display: block; width: 100%; aspect-ratio: 16 / 9; cursor: pointer; background: #0a0f1f; }
+  #loading { position: absolute; inset: 0; display: grid; place-items: center; color: var(--dim); font-size: 18px; background: #0a0f1f; }
+  .bar { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: var(--panel); border-top: 1px solid var(--line); }
+  .bar button, .bar select { background: transparent; color: var(--text); border: 1px solid var(--line); border-radius: 8px;
+    height: 34px; min-width: 34px; padding: 0 10px; font: inherit; font-size: 14px; cursor: pointer; }
+  .bar button:hover { border-color: var(--accent); }
+  .bar button.on { color: var(--accent); border-color: var(--accent); }
+  #play { width: 44px; font-size: 16px; }
+  #play::before { content: "▶"; }
+  #play.on::before { content: "❚❚"; }
+  .seekwrap { position: relative; flex: 1; height: 34px; display: flex; align-items: center; }
+  #seek { -webkit-appearance: none; appearance: none; width: 100%; height: 6px; border-radius: 3px; outline: none; margin: 0;
+    background: linear-gradient(90deg, var(--accent) var(--p, 0%), rgba(255,255,255,0.15) var(--p, 0%)); }
+  #seek::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--accent); cursor: pointer; }
+  #seek::-moz-range-thumb { width: 16px; height: 16px; border: 0; border-radius: 50%; background: var(--accent); cursor: pointer; }
+  #ticks { position: absolute; left: 0; right: 0; top: 50%; height: 0; pointer-events: none; }
+  #ticks i { position: absolute; top: -7px; width: 2px; height: 14px; background: rgba(255,255,255,0.35); }
+  #time { font-variant-numeric: tabular-nums; color: var(--dim); font-size: 14px; min-width: 92px; text-align: right; }
+  .side { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 24px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; }
+  .card h2 { margin: 0 0 12px; font-size: 18px; }
+  #chapters { display: grid; gap: 4px; }
+  .chapter { display: flex; justify-content: space-between; gap: 12px; text-align: left; background: transparent; border: 0;
+    color: var(--text); font: inherit; font-size: 15px; padding: 8px 10px; border-radius: 8px; cursor: pointer; }
+  .chapter:hover { background: rgba(255,255,255,0.05); }
+  .chapter.active { background: rgba(255,200,87,0.12); color: var(--accent); }
+  .chapter em { font-style: normal; color: var(--dim); font-variant-numeric: tabular-nums; }
+  .card ul { margin: 0; padding-left: 20px; line-height: 1.9; color: var(--dim); font-size: 15px; }
+  .card b { color: var(--text); font-weight: 600; }
+  kbd { border: 1px solid var(--line); border-radius: 4px; padding: 0 6px; font-size: 13px; color: var(--text); }
+  .cta { display: inline-block; margin-top: 12px; padding: 10px 16px; border-radius: 10px; background: var(--accent); color: #111; text-decoration: none; font-weight: 700; }
+  @media (max-width: 760px) {
+    .side { grid-template-columns: 1fr; }
+    .bar { flex-wrap: wrap; gap: 8px; }
+    .seekwrap { order: -1; flex-basis: 100%; }
+    #time { min-width: 0; }
+  }
+  html.render, html.render body { background: #000; overflow: hidden; }
+  html.render .wrap { max-width: none; padding: 0; }
+  html.render header, html.render .bar, html.render .side, html.render #loading { display: none; }
+  html.render #player { border: 0; border-radius: 0; box-shadow: none; }
+  html.render #stage { width: 1920px; height: 1080px; aspect-ratio: auto; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>什么是 Transformer？</h1>
+    <p>一部用 JavaScript 画出来的讲解视频 · 参考论文
+      <a href="https://arxiv.org/abs/1706.03762" target="_blank" rel="noopener">Attention Is All You Need（Vaswani et al., 2017）</a></p>
+  </header>
+
+  <div id="player">
+    <canvas id="stage" aria-label="动画画布"></canvas>
+    <div id="loading">正在加载字体……</div>
+    <div class="bar">
+      <button id="play" aria-label="播放"></button>
+      <div class="seekwrap"><div id="ticks"></div><input id="seek" type="range" min="0" max="1000" value="0" aria-label="进度"></div>
+      <span id="time">0:00</span>
+      <button id="subs" title="字幕（C）">字幕</button>
+      <select id="speed" aria-label="倍速">
+        <option value="0.75">0.75×</option><option value="1" selected>1×</option><option value="1.25">1.25×</option><option value="1.5">1.5×</option>
+      </select>
+      <button id="fs" title="全屏（F）">⛶</button>
+    </div>
+    <audio id="narration" src="assets/narration.m4a" preload="auto"></audio>
+  </div>
+
+  <div class="side">
+    <div class="card">
+      <h2>章节</h2>
+      <div id="chapters"></div>
+    </div>
+    <div class="card">
+      <h2>使用说明</h2>
+      <ul>
+        <li><kbd>空格</kbd> 播放 / 暂停，<kbd>←</kbd> <kbd>→</kbd> 快退 / 快进 5 秒</li>
+        <li><kbd>C</kbd> 开关字幕，<kbd>F</kbd> 全屏；点章节可直接跳转</li>
+        <li>画面里的数字都是<b>真算出来的</b>：点积、softmax、位置编码热力图都由 JS 实时计算</li>
+        <li>看完想自己动手？去 <b>注意力实验室</b> 拖动向量、调节 √dₖ，亲眼看 softmax 怎么变</li>
+      </ul>
+      <a class="cta" href="playground.html">打开注意力实验室 →</a>
+    </div>
+  </div>
+</div>
+
+<script src="src/fonts.js"></script>
+<script src="src/script.js"></script>
+<script src="src/timing.js"></script>
+<script src="src/engine.js"></script>
+<script src="src/scenes-1.js"></script>
+<script src="src/scenes-2.js"></script>
+<script src="src/scenes-3.js"></script>
+<script src="src/player.js"></script>
+</body>
+</html>
